@@ -1,0 +1,35 @@
+<resources>
+    <string name="app_name">GeoPost</string>
+    <string name="title_activity_main">Geopost</string>
+    <string name="title_activity_navigation_drawer">NavigationDrawerActivity</string>
+
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_example">Example action</string>
+    <string name="add_geopost_title">Geopost</string>
+    <string name="add_geopost_message_hint">Write something...</string>
+    <string name="add_geopost_title_hint">Title</string>
+    <string name="show_geopost_title">Geopost:</string>
+    <string name="action_settings">Settings</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="post">Post</string>
+    <string name="comment">Comment</string>
+    <string name="answer_geopost_title">Answer this geopost:</string>
+    <string name="not_online">No internet connection</string>
+    <string-array name="nav_drawer_items">
+        <item >Home</item>
+        <item >What\'s Hot</item>
+    </string-array>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="said">said</string>
+</resources>

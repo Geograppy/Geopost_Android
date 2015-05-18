@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="225dp"
+    android:layout_height="150dp"
+    android:background="@color/white">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="225dp"
+    android:layout_height="120dp"
+    android:background="@color/white"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/txt_dia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/add_geopost_title"
+        android:textColor="@android:color/black"
+        android:textSize="15sp"
+        android:textStyle="bold"/>
+
+    <EditText
+        android:id="@+id/add_geopost_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="@string/add_geopost_title_hint"
+        android:inputType="textCapSentences|textAutoCorrect"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:background="#00000000" />
+
+    <EditText
+        android:id="@+id/add_geopost_edit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:hint="@string/add_geopost_message_hint"
+        android:inputType="textCapSentences|textAutoCorrect"
+        android:textSize="13sp"
+        android:background="#00000000"
+        />
+
+</LinearLayout>
+<LinearLayout
+android:layout_width="40dp"
+android:layout_height="30dp"
+android:layout_gravity="bottom"
+android:layout_margin="10dp"
+android:background="@color/white"
+android:orientation="horizontal"
+android:layout_alignParentBottom="true"
+android:layout_alignParentLeft="true">
+
+<Button
+    android:id="@+id/btn_post"
+    android:layout_width="40dp"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:clickable="true"
+    android:text="@string/post"
+    android:textColor="@android:color/black"
+    android:textSize="15sp"
+    android:textStyle="bold"
+    android:textAlignment="textStart"
+    android:layout_gravity="start"
+    />
+</LinearLayout>
+</RelativeLayout>

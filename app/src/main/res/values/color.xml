@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="second_grey">#ff999999</color>
+    <color name="card_white">#ffffffff</color>
+    <color name="card_shadow">#8c666666</color>
+    <color name="add_geopost_dialog_title">#2A1506</color>
+    <color name="counter_text_bg">#2A1506</color>
+    <color name="counter_text_color">#2A1506</color>
+    <color name="grey">#808080</color>
+    <color name="list_background">#FFFF99</color>
+    <color name="list_background_pressed">#FFCC66</color>
+    <color name="list_divider">#FFCC66</color>
+    <color name="list_item_title">#2A1506</color>
+    <color name="white">#FFFFFF</color>
+    <color name="lightgrey">#d3d3d3</color>
+</resources>

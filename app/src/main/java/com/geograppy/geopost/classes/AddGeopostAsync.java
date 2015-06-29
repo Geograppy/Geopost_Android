@@ -2,57 +2,23 @@ package com.geograppy.geopost.classes;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
-import org.apache.http.HttpClientConnection;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.ClientConnectionRequest;
-import org.apache.http.conn.ConnectionPoolTimeoutException;
-import org.apache.http.conn.ManagedClientConnection;
-import org.apache.http.conn.routing.HttpRoute;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.json.JSONException;
-import org.json.JSONStringer;
+import com.geograppy.geopost.R;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by benito on 25/04/15.
  */
-public class AddGeopostAsync extends AsyncTask<String, Integer, Double> {
+public class AddGeopostAsync extends AsyncTask<String, Integer, Boolean> {
 
     private Context mContext;
     private OnGeopostCompleted listener;
@@ -63,23 +29,27 @@ public class AddGeopostAsync extends AsyncTask<String, Integer, Double> {
     }
 
     @Override
-    protected Double doInBackground(String... params) {
+    protected Boolean doInBackground(String... params) {
         // TODO Auto-generated method stub
-        postData(params[0]);
+
+        return postData(params[0]);
         //postDataManyTimes(params[0]);
-        return null;
+
     }
 
-    protected void onPostExecute(Double result){
+    protected void onPostExecute(Boolean result){
         //pb.setVisibility(View.GONE);
         //double showRestult = result;
+        Toast.makeText(mContext, "Sending...", Toast.LENGTH_LONG).cancel();
         listener.onGeopostCompleted();
-        Toast.makeText(mContext, "Geoposted", Toast.LENGTH_LONG).show();
+        if (result) Toast.makeText(mContext, "Geoposted", Toast.LENGTH_SHORT).show();
+        else Toast.makeText(mContext, R.string.postFailed, Toast.LENGTH_SHORT).show();
     }
 
-    public void postData(String value){
+    public boolean postData(String value) {
         URL url = null;
         HttpURLConnection conn = null;
+        boolean result = false;
         try {
             url = new URL("http://geopostwsdev.azurewebsites.net/Service.svc/add/geopost");
 
@@ -102,10 +72,13 @@ public class AddGeopostAsync extends AsyncTask<String, Integer, Double> {
             InputStream _is;
             if (responseHttpCode / 100 == 2) { // 2xx code means success
                 _is = conn.getInputStream();
-                count =0;
+                count = 0;
+                result = true;
             } else {
                 count++;
                 if (count < 4) postData(value);
+                else result = false;
+
                 _is = conn.getErrorStream();
 
 
@@ -124,6 +97,7 @@ public class AddGeopostAsync extends AsyncTask<String, Integer, Double> {
             String response = stringBuilder.toString();*/
 
             conn.disconnect();
+            return result;
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -133,10 +107,10 @@ public class AddGeopostAsync extends AsyncTask<String, Integer, Double> {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally{
+        } finally {
             conn.disconnect();
         }
+        return result;
     }
 
 }

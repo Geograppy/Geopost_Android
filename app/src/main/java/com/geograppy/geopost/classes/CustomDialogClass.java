@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.geograppy.geopost.R;
 import com.google.android.gms.maps.model.LatLng;
@@ -69,6 +70,7 @@ public class CustomDialogClass extends Dialog implements OnGeopostCompleted,
                 try {
                     String entity = getJson();
                     new AddGeopostAsync(c, this).execute(entity);
+                    Toast.makeText(c, "Sending...", Toast.LENGTH_LONG).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -92,7 +94,7 @@ public class CustomDialogClass extends Dialog implements OnGeopostCompleted,
                 .object()
                 .key("Title").value(titleText.getText())
                 .key("Text").value(editText.getText())
-                .key("UserName").value("GeopostEersteRestTest")
+                .key("UserId").value(Helpers.getUseridFromPreferences(c))
                 .key("Lon").value(latLng.longitude)
                 .key("Lat").value(latLng.latitude)
                 .endObject()

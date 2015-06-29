@@ -13,16 +13,20 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -30,12 +34,24 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.geograppy.geopost.R;
+import com.geograppy.geopost.classes.GetConversationsWithinBufferAsync;
+import com.geograppy.geopost.classes.GetUsernameAsync;
 import com.geograppy.geopost.classes.GetUsernameTask;
+import com.geograppy.geopost.classes.Helpers;
 import com.geograppy.geopost.classes.OnExceptionThrown;
+import com.geograppy.geopost.classes.OnUserIdFetched;
+import com.geograppy.geopost.classes.OnUserNameFetched;
+import com.geograppy.geopost.classes.OnUsernameEntered;
+import com.geograppy.geopost.classes.OnUsernameInDbSet;
+import com.geograppy.geopost.classes.SetUsernameDialog;
+import com.geograppy.geopost.classes.SetUsernameInDbAsync;
 import com.google.android.gms.auth.GooglePlayServicesAvailabilityException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -45,6 +61,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,7 +69,7 @@ import java.util.List;
 
 import static com.geograppy.geopost.R.drawable.ic_drawer;
 
-public class MainActivity extends ActionBarActivity implements OnExceptionThrown {
+public class MainActivity extends ActionBarActivity implements OnUserNameFetched, OnUsernameInDbSet, OnUserIdFetched, OnUsernameEntered, OnExceptionThrown {
     private static final int REQUEST_CODE_RECOVER_FROM_AUTH_ERROR = 1002;
     private DrawerLayout mDrawerLayout = null;
     private ListView mDrawerList = null;
@@ -64,6 +81,7 @@ public class MainActivity extends ActionBarActivity implements OnExceptionThrown
     private static final String SCOPE =
             "oauth2:https://www.googleapis.com/auth/userinfo.profile";
     private SharedPreferences mSettings;
+    private String mUsername;
 
 
 
@@ -75,12 +93,13 @@ public class MainActivity extends ActionBarActivity implements OnExceptionThrown
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mDrawerItems = getResources().getStringArray(R.array.nav_drawer_items);
-
-        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
+        putUsernameInDrawer();
+        setStatusBarColor(getResources().getColor(R.color.actionbar));
+        //mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
         mDrawerList.setAdapter(new ArrayAdapter<String>(
                 this, R.layout.drawer_list_item, mDrawerItems));
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -97,8 +116,27 @@ public class MainActivity extends ActionBarActivity implements OnExceptionThrown
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-        getUsername();
+        if (!Helpers.hasKnownUsername(this)) getUsername();
 
+
+        AdView mAdView = (AdView) findViewById(R.id.adView);
+
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                .build();
+        mAdView.loadAd(adRequest);
+
+    }
+
+    public void refreshDrawerItem(){
+        mDrawerItems = getResources().getStringArray(R.array.nav_drawer_items);
+        putUsernameInDrawer();
+        mDrawerList.setAdapter(new ArrayAdapter<String>(
+                this, R.layout.drawer_list_item, mDrawerItems));
+    }
+
+    private void putUsernameInDrawer(){
+        mDrawerItems[0] = mDrawerItems[0] + " " + Helpers.getUsernameFromPreferences(this);
     }
 
     private void pickUserAccount() {
@@ -108,6 +146,20 @@ public class MainActivity extends ActionBarActivity implements OnExceptionThrown
         startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
     }
 
+    public void setStatusBarColor(int color){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window w = getWindow();
+            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            w.setStatusBarColor(color);
+        }
+        getSupportActionBar().setElevation(0);
+
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -120,7 +172,8 @@ public class MainActivity extends ActionBarActivity implements OnExceptionThrown
             } else if (resultCode == RESULT_CANCELED) {
                 // The account picker dialog closed without selecting an account.
                 // Notify users that they must pick an account to proceed.
-                //Toast.makeText(this, R.string.pick_account, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.pick_account, Toast.LENGTH_SHORT).show();
+                pickUserAccount();
             }
         } else if ((requestCode == REQUEST_CODE_RECOVER_FROM_AUTH_ERROR ||
                 requestCode == REQUEST_CODE_RECOVER_FROM_PLAY_SERVICES_ERROR)
@@ -135,7 +188,7 @@ public class MainActivity extends ActionBarActivity implements OnExceptionThrown
             pickUserAccount();
         } else {
             if (isDeviceOnline()) {
-                new GetUsernameTask(this, mEmail, SCOPE, this).execute();
+                new GetUsernameTask(this, mEmail, SCOPE, this, this).execute();
             } else {
                 Toast.makeText(this, R.string.not_online, Toast.LENGTH_LONG).show();
             }
@@ -185,19 +238,85 @@ public class MainActivity extends ActionBarActivity implements OnExceptionThrown
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onUserIdFetched(int userId) {
+        String userIdString = Integer.toString(userId);
+        new GetUsernameAsync(this, this).execute(userIdString);
+    }
+
+    @Override
+    public void onUserNameFetched(String userName){
+        if (userName.equals("-1") || userName.equals("")){
+            showSetUsernameDialog();
+        }
+        else {
+            Helpers.setUsernameInPreferences(userName, this);
+            refreshDrawerItem();
+        }
+    }
+
+    @Override
+    public void onUsernameEntered(String username) {
+
+        if (!username.isEmpty()) {
+            mUsername = username;
+            new SetUsernameInDbAsync(this, this).execute(username);
+            refreshDrawerItem();
+        }
+        else showSetUsernameDialog();
+    }
+
+    private void showSetUsernameDialog(){
+        final Dialog dialog = new SetUsernameDialog(this, this);
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.add_geopost_dialog_animation;
+
+        dialog.show();
+    }
+
+    @Override
+    public void onUsernameInDbSet(String username) {
+        if (mUsername.equals(username)) {
+            Toast.makeText(this, R.string.saved, Toast.LENGTH_SHORT);
+            Helpers.setUsernameInPreferences(username, this);
+            refreshDrawerItem();
+        }
+        else if (username.equals("-1")){
+            Toast.makeText(this, R.string.UsernameExists, Toast.LENGTH_SHORT).show();
+            showSetUsernameDialog();
+        }
+        else showSetUsernameDialog();
+    }
+
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
+
+        private Activity a;
+
+        public DrawerItemClickListener(Activity mainActivity) {
+            this.a = mainActivity;
+        }
 
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
             switch (position) {
                 case 0: {
-                    //Intent intent = new Intent(MainActivity.this, MapActivity.class);
-                    //startActivity(intent);
-                    break;
+                    showSetUsernameDialog();
                 }
                 case 1: {
-                    //Intent intent = new Intent(MainActivity.this, MapActivity.class);
-                    //startActivity(intent);
+                    GeopostMapFragment fragment = (GeopostMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+                    fragment.goToMyLocation();
+                    break;
+                }
+                case 2: {
+                    GeopostMapFragment fragment = (GeopostMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+                    fragment.postToMyLocation();
+                    break;
+                }
+                case 3: {
+                    Helpers.setUsernameInPreferences("", this.a);
+                    Helpers.setUseridInPreferences(-1, this.a);
+                    finish();
+                    startActivity(getIntent());
                     break;
                 }
                 default:
@@ -205,6 +324,11 @@ public class MainActivity extends ActionBarActivity implements OnExceptionThrown
             }
             mDrawerLayout.closeDrawer(mDrawerList);
         }
+    }
+
+    protected void onNewIntent(Intent intent){
+        GeopostMapFragment fragment = (GeopostMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        fragment.goToMyLocation();
     }
 
 

@@ -19,13 +19,13 @@ public class Geopost {
     public String TimeAgo;
 
     public void setTimeAgo(String value){
-        if (value.contains(".")){
+        if (value.contains(".") && (value.indexOf(".") < value.indexOf(":"))){
             int index = value.indexOf(".");
             int endIndex = index--;
             setTimeAgoFromDays(value.substring(0, endIndex));
         }
-        else if (!value.substring(0,1).equals("00")) setTimeAgoHours(value.substring(0,1));
-        else if (!value.substring(3,4).equals("00")) setTimeAgoMinutes(value.substring(3,4));
+        else if (!value.substring(0,2).equals("00")) setTimeAgoHours(value.substring(0,2));
+        else if (!value.substring(3,5).equals("00")) setTimeAgoMinutes(value.substring(3,5));
         else TimeAgo = "just now";
     }
 

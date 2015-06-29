@@ -1,9 +1,36 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <!--<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@color/actionbar</item>
+
+    </style>-->
+
+    <style name="AppTheme" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
+        <item name="android:background" tools:ignore="NewApi">@color/actionbar</item>
+        <item name="background">@color/actionbar</item>
+        <item name="titleTextStyle">@style/MyTheme.ActionBar.TitleTextStyle</item>
+        <!--<item name="titleTextStyle">@color/white</item>-->
     </style>
+
+    <style name="MyTheme.ActionBar.TitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title" >
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="CustomActionBarTheme" parent="@style/Theme.AppCompat.Light">
+        <item name="android:actionBarStyle"   tools:ignore="NewApi">@style/AppTheme</item>
+        <item name="actionBarStyle">@style/AppTheme</item>
+    </style>
+
+
+    <style name="markerText" parent="@android:style/TextAppearance.Medium">
+        <item name="android:textSize">15sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:typeface">sans</item>
+    </style>
+
+
 
     <style name="add_geopost_dialog_animation">
         <item name="android:windowEnterAnimation">@anim/add_geopost_slide_in</item>

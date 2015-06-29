@@ -1,14 +1,19 @@
 package com.geograppy.geopost.classes;
 
-import android.content.Context;
+import android.app.Activity;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.geograppy.geopost.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -18,51 +23,51 @@ import java.net.URL;
 /**
  * Created by benito on 25/04/15.
  */
-public class AnswerGeopostAsync extends AsyncTask<String, Integer, Boolean> {
+public class SetUsernameInDbAsync extends AsyncTask<String, Integer, String> {
 
-    private Context mContext;
-    private OnAnswerGeopostCompleted listener;
+    private Activity mActivity;
+    private OnUsernameInDbSet listener;
     private int count = 0;
-    public AnswerGeopostAsync(Context context, OnAnswerGeopostCompleted listener){
-        mContext = context;
+    public SetUsernameInDbAsync(Activity activity, OnUsernameInDbSet listener){
+        mActivity = activity;
         this.listener = listener;
     }
 
-    @Override
-    protected Boolean doInBackground(String... params) {
-        // TODO Auto-generated method stub
-
-        //postDataManyTimes(params[0]);
-        return postData(params[0]);
-    }
-
-    protected void onPostExecute(Boolean result){
+    protected void onPostExecute(String result){
         //pb.setVisibility(View.GONE);
         //double showRestult = result;
-        Toast.makeText(mContext, "Sending...", Toast.LENGTH_SHORT).cancel();
-        listener.onAnswerGeopostCompleted();
-        if (result) Toast.makeText(mContext, "Geoposted", Toast.LENGTH_SHORT).show();
-        else Toast.makeText(mContext, R.string.postFailed, Toast.LENGTH_SHORT).show();
+        listener.onUsernameInDbSet(result);
+        //Toast.makeText(mContext, "Geoposted", Toast.LENGTH_LONG).show();
     }
 
-    public Boolean postData(String value){
+    @Override
+    protected String doInBackground(String... params) {
+        try {
+            return postData(params[0]);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "-1";
+    }
+
+    public String postData(String username) throws JSONException {
         URL url = null;
         HttpURLConnection conn = null;
-        Boolean result = false;
         try {
-            url = new URL("http://geopostwsdev.azurewebsites.net/Service.svc/answer/geopost");
+            String urlString = mActivity.getString(R.string.wsUrl) + "/set/username";
+            url = new URL(urlString);
 
             conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(100000);
+            conn.setConnectTimeout(150000);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoInput(true);
             conn.setDoOutput(true);
-
+            String requestValue = buildSetUsernameJson(username);
             //OutputStream os = conn.getOutputStream();
             DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-            os.writeBytes(value);
+            os.writeBytes(requestValue);
             os.flush();
             os.close();
 
@@ -72,18 +77,13 @@ public class AnswerGeopostAsync extends AsyncTask<String, Integer, Boolean> {
             if (responseHttpCode / 100 == 2) { // 2xx code means success
                 _is = conn.getInputStream();
                 count =0;
-                result = true;
             } else {
                 count++;
-                if (count < 4) postData(value);
-                else result = false;
+                if (count < 4) postData(username);
                 _is = conn.getErrorStream();
 
-
-                //String result = getStringFromInputStream(_is);
-                //Log.i("Error != 2xx", result);
             }
-            /*//= new BufferedInputStream(conn.getInputStream());
+
             BufferedReader responseStreamReader = new BufferedReader(new InputStreamReader(_is));
             String line = "";
             StringBuilder stringBuilder = new StringBuilder();
@@ -91,11 +91,10 @@ public class AnswerGeopostAsync extends AsyncTask<String, Integer, Boolean> {
                 stringBuilder.append(line);
             }
             responseStreamReader.close();
+            String output = stringBuilder.toString().replace("\"", "");
+            return output;
 
-            String response = stringBuilder.toString();*/
 
-            conn.disconnect();
-            return result;
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -109,7 +108,23 @@ public class AnswerGeopostAsync extends AsyncTask<String, Integer, Boolean> {
         finally{
             conn.disconnect();
         }
-        return result;
+        return "-1";
+    }
+
+
+    private String buildSetUsernameJson(String username) throws JSONException {
+        // Add your data
+        JSONStringer post = new JSONStringer()
+                .object()
+                .key("setGeopostUsernameRequest")
+                .object()
+                .key("Username").value(username)
+                .key("UserId").value(Helpers.getUseridFromPreferences(mActivity))
+                .endObject()
+                .endObject();
+
+
+        return post.toString();
     }
 
 }

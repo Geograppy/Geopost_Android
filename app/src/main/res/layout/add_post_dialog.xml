@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:text="@string/add_geopost_title"
-        android:textColor="@android:color/black"
+        android:textColor="@color/counter_text_color"
         android:textSize="15sp"
         android:textStyle="bold"/>
 
@@ -43,23 +43,23 @@
 
 </LinearLayout>
 <LinearLayout
-android:layout_width="40dp"
+android:layout_width="match_parent"
 android:layout_height="30dp"
 android:layout_gravity="bottom"
 android:layout_margin="10dp"
-android:background="@color/white"
+android:background="@color/lightgrey"
 android:orientation="horizontal"
 android:layout_alignParentBottom="true"
 android:layout_alignParentLeft="true">
 
 <Button
     android:id="@+id/btn_post"
-    android:layout_width="40dp"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:clickable="true"
     android:text="@string/post"
-    android:textColor="@android:color/black"
+    android:textColor="@color/counter_text_color"
     android:textSize="15sp"
     android:textStyle="bold"
     android:textAlignment="textStart"

@@ -2,6 +2,9 @@ package com.geograppy.geopost.classes;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.Toast;
+
+import com.geograppy.geopost.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,6 +48,7 @@ public class GetConversationsByIdAsync extends AsyncTask<String, Integer, ArrayL
     protected void onPostExecute(ArrayList<Geopost> result){
         //pb.setVisibility(View.GONE);
         //double showRestult = result;
+        if (result.size() == 0) Toast.makeText(mContext, R.string.loadFailed, Toast.LENGTH_SHORT).show();
         this.listener.OnGetConversationsByIdCompleted(result);
         //Toast.makeText(mContext, "Ready", Toast.LENGTH_LONG).show();
     }

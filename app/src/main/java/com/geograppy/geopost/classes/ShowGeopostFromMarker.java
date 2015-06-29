@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.geograppy.geopost.R;
 import com.google.android.gms.maps.model.LatLng;
@@ -98,6 +99,7 @@ public class ShowGeopostFromMarker extends Dialog implements OnAnswerGeopostComp
             case R.id.btn_answer:
                 hideSoftKeyboard();
                 String entity = getJson();
+                Toast.makeText(c, "Sending...", Toast.LENGTH_SHORT).show();
                 new AnswerGeopostAsync(c, this).execute(entity);
                 hideAnswerDialog();
                 scrollDownListView();
@@ -120,7 +122,7 @@ public class ShowGeopostFromMarker extends Dialog implements OnAnswerGeopostComp
                     .key("answerGeopostRequest")
                     .object()
                     .key("Text").value(myTextView.getText())
-                    .key("UserName").value("GeopostEersteRestTest")
+                    .key("UserId").value(Helpers.getUseridFromPreferences(c))
                     .key("ConvGuid").value(geopostId.toString())
                     .endObject()
                     .endObject();

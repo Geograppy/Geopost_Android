@@ -30,6 +30,7 @@ public class GetConversationsWithinBufferAsync extends AsyncTask<String, Integer
     private int count = 0;
     private OnTaskCompleted listener;
     public ArrayList<ConversationGeom> mConversations;
+    private boolean firstConverstions = true;
     public GetConversationsWithinBufferAsync(Context context, OnTaskCompleted listener){
         mContext = context;
         this.listener = listener;
@@ -47,7 +48,10 @@ public class GetConversationsWithinBufferAsync extends AsyncTask<String, Integer
         //pb.setVisibility(View.GONE);
         //double showRestult = result;
         this.listener.onTaskCompleted(result);
-        Toast.makeText(mContext, "Ready", Toast.LENGTH_LONG).show();
+        if (firstConverstions) {
+            //Toast.makeText(mContext, "Ready", Toast.LENGTH_LONG).show();
+            firstConverstions = false;
+        }
     }
 
     private ArrayList<ConversationGeom> getConversationListFromJson(String json){

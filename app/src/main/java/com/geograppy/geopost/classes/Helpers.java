@@ -3,6 +3,8 @@ package com.geograppy.geopost.classes;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
 import android.util.TypedValue;
 
 import com.geograppy.geopost.R;
@@ -77,6 +79,23 @@ public class Helpers {
         SharedPreferences sharedPref = a.getPreferences(Context.MODE_PRIVATE);
         return sharedPref.getString(String.valueOf(R.string.sharedPrefNotifiedConversationIds), "-1");
 
+    }
+
+    public static void setBadgeCount(Context context, LayerDrawable icon, int count) {
+
+        BadgeDrawable badge;
+
+        // Reuse drawable if possible
+        Drawable reuse = icon.findDrawableByLayerId(R.id.ic_badge);
+        if (reuse != null && reuse instanceof BadgeDrawable) {
+            badge = (BadgeDrawable) reuse;
+        } else {
+            badge = new BadgeDrawable(context);
+        }
+
+        badge.setCount(count);
+        icon.mutate();
+        icon.setDrawableByLayerId(R.id.ic_badge, badge);
     }
 
 }

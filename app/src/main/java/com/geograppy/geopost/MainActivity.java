@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -23,6 +24,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -82,6 +84,7 @@ public class MainActivity extends ActionBarActivity implements OnUserNameFetched
             "oauth2:https://www.googleapis.com/auth/userinfo.profile";
     private SharedPreferences mSettings;
     private String mUsername;
+    private int mNotificationsCount;
 
 
 
@@ -104,6 +107,7 @@ public class MainActivity extends ActionBarActivity implements OnUserNameFetched
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+
         mDrawerToggle = new ActionBarDrawerToggle(this,
                 mDrawerLayout,
                 R.string.drawer_open, R.string.drawer_close) {
@@ -118,14 +122,16 @@ public class MainActivity extends ActionBarActivity implements OnUserNameFetched
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         if (!Helpers.hasKnownUsername(this)) getUsername();
 
+        loadAdBanner();
+    }
 
+    private void loadAdBanner(){
         AdView mAdView = (AdView) findViewById(R.id.adView);
 
         AdRequest adRequest = new AdRequest.Builder()
                 .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
                 .build();
         mAdView.loadAd(adRequest);
-
     }
 
     public void refreshDrawerItem(){
@@ -229,13 +235,39 @@ public class MainActivity extends ActionBarActivity implements OnUserNameFetched
         return super.onPrepareOptionsMenu(menu);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.global, menu);
+
+        MenuItem item = menu.findItem(R.id.action_notifications);
+        LayerDrawable icon = (LayerDrawable) item.getIcon();
+
+        Helpers.setBadgeCount(this, icon, mNotificationsCount);
+
+        return super.onCreateOptionsMenu(menu);
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
+        if (item.getItemId() == R.id.action_notifications)
+        {
+            mNotificationsCount = mNotificationsCount + 1;
+            updateNotificationsBadge(mNotificationsCount);
+            //show notificationlist;
+            return true;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateNotificationsBadge(int count){
+        mNotificationsCount = count;
+        supportInvalidateOptionsMenu();
     }
 
     @Override

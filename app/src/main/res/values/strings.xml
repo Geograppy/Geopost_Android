@@ -41,6 +41,7 @@
     <string name="getUsernameFailed">Failed to get username. Check internet connection</string>
     <string name="saved">Saved</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="notifications">Notifications</string>
 
     <string-array name="nav_drawer_items">
         <item >Change username: </item>

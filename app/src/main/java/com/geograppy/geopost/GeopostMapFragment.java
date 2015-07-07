@@ -78,7 +78,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
     public View mOriginalContentView;
     public TouchableWrapper mTouchView;
     public NotificationControl notificationManager;
-    public boolean sendNotifications = false;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,8 +87,10 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         fragmentActivity = (FragmentActivity) super.getActivity();
         llLayout    = (FrameLayout)    inflater.inflate(R.layout.fragment_geopost_map, container, false);
         initialLocationSet = false;
-        sendNotifications = false;
-        notificationManager = new NotificationControl(super.getActivity());
+
+        notificationManager = new NotificationControl((MainActivity)super.getActivity());
+        notificationManager.sendNotifications = false;
+        setUpdateLocationRequest(R.integer.locationRequestInterval_active);
         //llLayout.findViewById(R.id.activity_frame);
         //LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -109,7 +111,8 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
     @Override
     public void onDestroyView(){
         super.onDestroyView();
-        sendNotifications = false;
+        notificationManager.sendNotifications = false;
+        setUpdateLocationRequest(R.integer.locationRequestInterval_inactive);
     }
 
     @Override
@@ -230,6 +233,13 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
                 .setFastestInterval(10 * 1000); // 1 second, in milliseconds
     }
 
+    private void setUpdateLocationRequest(int intervalSeconds){
+        if (mLocationRequest != null){
+            mLocationRequest.setInterval(intervalSeconds * 1000)        // 60 seconds, in milliseconds
+                    .setFastestInterval(10 * 1000); // 1 second, in milliseconds
+        }
+    }
+
     private void handleNewLocation(Location location) {
         Log.d(TAG, location.toString());
 
@@ -237,8 +247,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         currentGpsLongitude = location.getLongitude();
 
         LatLng latLng = new LatLng(currentGpsLatitude, currentGpsLongitude);
-        if (sendNotifications) notificationManager.start(latLng);
-        else notificationManager.removeAll();
+        notificationManager.start(latLng);
 
         if (!initialLocationSet) {
             if (currentGpsLatitude != 0 && currentGpsLongitude !=0) {
@@ -266,19 +275,11 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         }
     }
 
-    protected void controlMarker(ConversationGeom conversation){
-        IconGenerator tc = new IconGenerator(super.getActivity());
-        Bitmap bmp = tc.makeIcon(conversation.Title);
-        LatLng latlng = new LatLng(conversation.Lat, conversation.Lon);
-        MarkerOptions markerOptions = new MarkerOptions().
-                icon(BitmapDescriptorFactory.fromBitmap(bmp)).
-                position(latlng);
-
-        Marker marker = mMap.addMarker(markerOptions);
-        markersData.put(marker, conversation);
+    public void zoomToLatLng(LatLng latLng){
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
     }
 
-    private void controlMarker(ArrayList<ConversationGeom> conversations){
+    public void controlMarker(ArrayList<ConversationGeom> conversations){
 
         setMarkerTapListener();
         if (conversations != null) {
@@ -377,22 +378,26 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         setUpdateLocationRequest();
         buildGoogleApiClient();
         if (mGoogleApiClient != null && !mGoogleApiClient.isConnected()) {mGoogleApiClient.connect();}
-        sendNotifications = false;
+        notificationManager.sendNotifications = false;
         notificationManager.removeAll();
+        setUpdateLocationRequest(R.integer.locationRequestInterval_active);
         //showConversationsOnMap();
+    }
+
+    public void showNotificationList(){
+        notificationManager.showNotificationsList();
     }
 
     @Override
     public void onPause() {
         super.onPause();
         if (mGoogleApiClient.isConnected()) {
-            sendNotifications = true;
+            notificationManager.sendNotifications = true;
+            setUpdateLocationRequest(R.integer.locationRequestInterval_inactive);
             //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             //mGoogleApiClient.disconnect();
         }
     }
-
-
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
@@ -421,11 +426,14 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
 
     @Override
     public void onUpdateMapAfterUserInterection() {
+
         LatLng center = mMap.getCameraPosition().target;
         currentMapCenterLat = center.latitude;
         currentMapCenterLon = center.longitude;
-        if (currentMapCenterLon != 0 || currentMapCenterLat != 0)showConversationsOnMap();
-        else {zoomToFullExtent();}
+        if (currentMapCenterLon != 0 || currentMapCenterLat != 0){
+            showConversationsOnMap();
+            notificationManager.start(center);
+        } else {zoomToFullExtent();}
     }
 }
 

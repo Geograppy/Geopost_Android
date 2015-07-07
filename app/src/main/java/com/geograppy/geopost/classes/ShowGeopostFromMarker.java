@@ -61,11 +61,6 @@ public class ShowGeopostFromMarker extends Dialog implements OnAnswerGeopostComp
         comment = (Button) findViewById(R.id.btn_comment);
         //no = (Button) findViewById(R.id.btn_no);
         comment.setOnClickListener(this);
-        //this.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-        //no.setOnClickListener(this);
-        //setEditTextFilter();
-
-
     }
 
     private String getConversationsJson() {
@@ -173,8 +168,7 @@ public class ShowGeopostFromMarker extends Dialog implements OnAnswerGeopostComp
             return;
         }
         ListView listView = (ListView) findViewById(R.id.show_geopost_list);
-        ArrayList<String> textList = getTextFromGeopostList(geopost);
-        String[] array = new String[geopost.size()];
+
         adapter = new ShowGeopostListAdapter<>(c, R.layout.show_geopost_item, geopost);
         listView.setAdapter(adapter);
         //if (!this.title.isEmpty())titleView.setText((CharSequence) this.title);

@@ -82,7 +82,7 @@ public class GetConversationsByIdAsync extends AsyncTask<String, Integer, ArrayL
         URL url = null;
         HttpURLConnection conn = null;
         try {
-            url = new URL("http://geopostwsdev.azurewebsites.net/Service.svc/get/conversation");
+            url = new URL(mContext.getString(R.string.wsUrl) + "/get/conversation");
             conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);

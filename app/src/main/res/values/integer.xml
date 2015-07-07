@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="buffer_for_conversations">500</integer>
+    <integer name="locationRequestInterval_active">10</integer>
+    <integer name="locationRequestInterval_inactive">600</integer>
 </resources>

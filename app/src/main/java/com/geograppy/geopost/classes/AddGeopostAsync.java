@@ -51,7 +51,7 @@ public class AddGeopostAsync extends AsyncTask<String, Integer, Boolean> {
         HttpURLConnection conn = null;
         boolean result = false;
         try {
-            url = new URL("http://geopostwsdev.azurewebsites.net/Service.svc/add/geopost");
+            url = new URL(mContext.getString(R.string.wsUrl) + "/add/geopost");
 
             conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000);

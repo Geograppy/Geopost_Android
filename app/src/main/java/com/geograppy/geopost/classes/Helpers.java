@@ -46,41 +46,6 @@ public class Helpers {
         editor.commit();
     }
 
-    public static boolean containsNotNotifiedConversationIds(ArrayList<ConversationGeom> conversations, Activity a) {
-
-        if (conversations != null) {
-            String knownIds = getNotifiedConversationIds(a);
-            for (int i = 0; i < conversations.size(); i++) {
-                if (!knownIds.contains(conversations.get(i).ConvGuid.toString())) {
-                    return true;
-                }
-            }
-
-        }
-        return false;
-    }
-
-    public static void setNotifiedConversationsIds(ArrayList<ConversationGeom> conversations, Activity a){
-        if (conversations != null) {
-            String knownIds = getNotifiedConversationIds(a);
-            for (int i = 0; i < conversations.size(); i++) {
-                if (!knownIds.contains(conversations.get(i).ConvGuid.toString())) {
-                    knownIds = knownIds + conversations.get(i).ConvGuid.toString();
-                }
-            }
-            SharedPreferences sharedPref = a.getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString(String.valueOf(R.string.sharedPrefNotifiedConversationIds), knownIds);
-            editor.commit();
-        }
-    }
-
-    private static String getNotifiedConversationIds(Activity a){
-        SharedPreferences sharedPref = a.getPreferences(Context.MODE_PRIVATE);
-        return sharedPref.getString(String.valueOf(R.string.sharedPrefNotifiedConversationIds), "-1");
-
-    }
-
     public static void setBadgeCount(Context context, LayerDrawable icon, int count) {
 
         BadgeDrawable badge;

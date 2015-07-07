@@ -257,15 +257,14 @@ public class MainActivity extends ActionBarActivity implements OnUserNameFetched
         }
         if (item.getItemId() == R.id.action_notifications)
         {
-            mNotificationsCount = mNotificationsCount + 1;
-            updateNotificationsBadge(mNotificationsCount);
-            //show notificationlist;
+            GeopostMapFragment fragment = (GeopostMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            fragment.showNotificationList();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void updateNotificationsBadge(int count){
+    public void updateNotificationsBadge(int count){
         mNotificationsCount = count;
         supportInvalidateOptionsMenu();
     }

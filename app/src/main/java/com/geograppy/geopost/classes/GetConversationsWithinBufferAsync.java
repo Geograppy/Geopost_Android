@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import com.geograppy.geopost.R;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,7 +85,7 @@ public class GetConversationsWithinBufferAsync extends AsyncTask<String, Integer
         URL url = null;
         HttpURLConnection conn = null;
         try {
-            url = new URL("http://geopostwsdev.azurewebsites.net/Service.svc/get/conversations");
+            url = new URL(mContext.getString(R.string.wsUrl) + "/get/conversations");
             conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);

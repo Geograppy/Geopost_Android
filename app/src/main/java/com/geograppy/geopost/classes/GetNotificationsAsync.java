@@ -2,56 +2,86 @@ package com.geograppy.geopost.classes;
 
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
 
 import com.geograppy.geopost.R;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by benito on 25/04/15.
  */
-public class AnswerGeopostAsync extends AsyncTask<String, Integer, Boolean> {
+public class GetNotificationsAsync extends AsyncTask<String, Integer, ArrayList<GeopostNotification>> {
 
     private Context mContext;
-    private OnAnswerGeopostCompleted listener;
     private int count = 0;
-    public AnswerGeopostAsync(Context context, OnAnswerGeopostCompleted listener){
+    private OnNotifcationsReceived listener;
+    public ArrayList<ConversationGeom> mConversations;
+    private boolean firstConverstions = true;
+    public GetNotificationsAsync(Context context, OnNotifcationsReceived listener){
         mContext = context;
         this.listener = listener;
     }
 
     @Override
-    protected Boolean doInBackground(String... params) {
+    protected ArrayList<GeopostNotification> doInBackground(String... params) {
         // TODO Auto-generated method stub
-
-        //postDataManyTimes(params[0]);
         return postData(params[0]);
+        //postDataManyTimes(params[0]);
+        //return null;
     }
 
-    protected void onPostExecute(Boolean result){
+    protected void onPostExecute(ArrayList<GeopostNotification> result){
         //pb.setVisibility(View.GONE);
         //double showRestult = result;
-        Toast.makeText(mContext, "Sending...", Toast.LENGTH_SHORT).cancel();
-        listener.onAnswerGeopostCompleted();
-        if (result) Toast.makeText(mContext, "Geoposted", Toast.LENGTH_SHORT).show();
-        else Toast.makeText(mContext, R.string.postFailed, Toast.LENGTH_SHORT).show();
+        this.listener.onNotifcationsReceived(result);
     }
 
-    public Boolean postData(String value){
+    private ArrayList<GeopostNotification> getNotificationListFromJson(String json){
+
+        ArrayList<GeopostNotification> notifications = new ArrayList<GeopostNotification>();
+        GeopostNotification notification = null;
+        JSONObject jObj = null;
+        try {
+            jObj = new JSONObject(json);
+
+            JSONArray jArr = jObj.getJSONArray("Notifications");
+            for (int i=0; i < jArr.length(); i++) {
+                JSONObject obj = jArr.getJSONObject(i);
+                notification = new GeopostNotification();
+                notification.ConversationId = UUID.fromString(obj.getString("ConvGuid"));
+                notification.Lat = obj.getDouble("Lat");
+                notification.Lon = obj.getDouble("Lon");
+                notification.Title = obj.getString("Title");
+                notification.NotificationType = obj.getInt("NotificationType");
+                notifications.add(notification);
+            }
+            return notifications;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public ArrayList<GeopostNotification> postData(String value){
         URL url = null;
         HttpURLConnection conn = null;
-        Boolean result = false;
         try {
-            url = new URL(mContext.getString(R.string.wsUrl) + "/answer/geopost");
-
+            url = new URL(mContext.getString(R.string.wsUrl) + "/get/notifications");
             conn = (HttpURLConnection) url.openConnection();
             conn.setReadTimeout(10000);
             conn.setConnectTimeout(15000);
@@ -71,19 +101,16 @@ public class AnswerGeopostAsync extends AsyncTask<String, Integer, Boolean> {
             InputStream _is;
             if (responseHttpCode / 100 == 2) { // 2xx code means success
                 _is = conn.getInputStream();
-                count =0;
-                result = true;
+                count = 0;
             } else {
                 count++;
                 if (count < 4) postData(value);
-                else result = false;
                 _is = conn.getErrorStream();
-
 
                 //String result = getStringFromInputStream(_is);
                 //Log.i("Error != 2xx", result);
             }
-            /*//= new BufferedInputStream(conn.getInputStream());
+            //= new BufferedInputStream(conn.getInputStream());
             BufferedReader responseStreamReader = new BufferedReader(new InputStreamReader(_is));
             String line = "";
             StringBuilder stringBuilder = new StringBuilder();
@@ -92,10 +119,9 @@ public class AnswerGeopostAsync extends AsyncTask<String, Integer, Boolean> {
             }
             responseStreamReader.close();
 
-            String response = stringBuilder.toString();*/
+            return getNotificationListFromJson(stringBuilder.toString());
 
-            conn.disconnect();
-            return result;
+
 
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -109,7 +135,7 @@ public class AnswerGeopostAsync extends AsyncTask<String, Integer, Boolean> {
         finally{
             conn.disconnect();
         }
-        return result;
+        return null;
     }
 
 }

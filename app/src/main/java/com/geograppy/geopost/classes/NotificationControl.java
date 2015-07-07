@@ -29,7 +29,7 @@ import java.util.TreeSet;
 /**
  * Created by benito on 02/06/15.
  */
-public class NotificationControl implements OnNotifcationsReceived {
+public class NotificationControl implements OnNotifcationsReceived, OnNotificationClickOrRemove {
 
     private MainActivity a;
     private double lon;
@@ -151,7 +151,7 @@ public class NotificationControl implements OnNotifcationsReceived {
 
     @Override
     public void onNotifcationsReceived(ArrayList<GeopostNotification> notificationsResponse) {
-        if (notifications != null && notifications.size() > 0){
+        if (notificationsResponse != null && notificationsResponse.size() > 0){
             updateNotificatons(notificationsResponse);
             a.updateNotificationsBadge(notifications.size());
             if (sendNotifications){
@@ -161,7 +161,20 @@ public class NotificationControl implements OnNotifcationsReceived {
         else mNotifyMgr.cancel(mNotificationId);
     }
 
+    @Override
+    public void onNotificationClickOrRemove(GeopostNotification notification) {
+        notifications.remove(notification);
+        a.updateNotificationsBadge(notifications.size());
+    }
+
+    @Override
+    public void onClear() {
+        notifications.clear();
+        a.updateNotificationsBadge(notifications.size());
+    }
+
     public void updateNotificatons(ArrayList<GeopostNotification> list){
+        if (notifications == null) notifications = new ArrayList<GeopostNotification>();
         notifications.addAll(list);
         removeDuplicates();
     }
@@ -178,15 +191,18 @@ public class NotificationControl implements OnNotifcationsReceived {
             }
         });
         s.addAll(notifications);
-        notifications = (ArrayList) Arrays.asList(s.toArray());
+        notifications = new ArrayList<GeopostNotification>(s);
     }
 
     public void showNotificationsList(){
-        final Dialog dialog = new ShowNotificationsListDialog(a,notifications);
+        if (notifications == null || notifications.size() == 0) return;
+        final Dialog dialog = new ShowNotificationsListDialog(a,notifications, this);
 
         dialog.getWindow().setGravity(Gravity.BOTTOM);
         dialog.getWindow().getAttributes().windowAnimations = R.style.add_geopost_dialog_animation;
 
         dialog.show();
     }
+
+
 }

@@ -3,7 +3,20 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@color/white"
-    android:orientation="horizontal">
+    android:orientation="vertical">
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/show_notification_item_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="10dp"
+        android:textColor="@color/add_geopost_dialog_title"
+        android:textStyle="bold"
+        android:textSize="13sp">
+    </TextView>
 
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/show_notification_item_text"
@@ -12,6 +25,7 @@
         android:gravity="center_vertical"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        android:paddingBottom="10dp"
         android:textColor="@color/grey"
         android:textSize="13sp">
     </TextView>

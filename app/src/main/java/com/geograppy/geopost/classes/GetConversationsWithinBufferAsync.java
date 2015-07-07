@@ -49,15 +49,13 @@ public class GetConversationsWithinBufferAsync extends AsyncTask<String, Integer
     protected void onPostExecute(ArrayList<ConversationGeom> result){
         //pb.setVisibility(View.GONE);
         //double showRestult = result;
-        this.listener.onTaskCompleted(result);
-        if (firstConverstions) {
-            //Toast.makeText(mContext, "Ready", Toast.LENGTH_LONG).show();
-            firstConverstions = false;
-        }
+        if (result != null) this.listener.onTaskCompleted(result);
+
     }
 
     private ArrayList<ConversationGeom> getConversationListFromJson(String json){
 
+        if (json == null) return null;
         ArrayList<ConversationGeom> conversations = new ArrayList<ConversationGeom>();
         ConversationGeom conversation = null;
         JSONObject jObj = null;

@@ -30,17 +30,19 @@ import java.util.UUID;
 /**
  * Created by benito on 29/04/15.
  */
-public class ShowNotificationsListDialog extends Dialog implements AdapterView.OnItemClickListener {
+public class ShowNotificationsListDialog extends Dialog implements AdapterView.OnItemClickListener, View.OnClickListener {
     public MainActivity c;
     public Dialog d;
     private ShowNotificationListAdapter<GeopostNotification> adapter;
     private ArrayList<GeopostNotification> notifications;
+    private OnNotificationClickOrRemove listener;
 
-    public ShowNotificationsListDialog(Activity a, ArrayList<GeopostNotification> notifications) {
+    public ShowNotificationsListDialog(Activity a, ArrayList<GeopostNotification> notifications, OnNotificationClickOrRemove listener) {
         super(a);
         // TODO Auto-generated constructor stub
         this.c = (MainActivity) a;
         this.notifications = notifications;
+        this.listener = listener;
     }
 
     @Override
@@ -49,6 +51,10 @@ public class ShowNotificationsListDialog extends Dialog implements AdapterView.O
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.show_notifications_list_dialog);
         loadNotificationsList();
+
+        Button clear = (Button) findViewById(R.id.btn_clear);
+        //no = (Button) findViewById(R.id.btn_no);
+        clear.setOnClickListener(this);
     }
 
     public void loadNotificationsList() {
@@ -75,9 +81,27 @@ public class ShowNotificationsListDialog extends Dialog implements AdapterView.O
         ArrayList<ConversationGeom> conversations = new ArrayList<ConversationGeom>();
         conversations.add(conversation);
 
+        adapter.remove(notification);
+        listener.onNotificationClickOrRemove(notification);
+        dismiss();
+
         LatLng latLng = new LatLng(notification.Lat, notification.Lon);
         GeopostMapFragment fragment = (GeopostMapFragment) c.getSupportFragmentManager().findFragmentById(R.id.map);
         fragment.zoomToLatLng(latLng);
         fragment.controlMarker(conversations);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_clear:
+                listener.onClear();
+                dismiss();
+                break;
+
+            default:
+                break;
+        }
+        dismiss();
     }
 }

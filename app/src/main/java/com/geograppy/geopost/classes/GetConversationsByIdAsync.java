@@ -48,7 +48,7 @@ public class GetConversationsByIdAsync extends AsyncTask<String, Integer, ArrayL
     protected void onPostExecute(ArrayList<Geopost> result){
         //pb.setVisibility(View.GONE);
         //double showRestult = result;
-        if (result.size() == 0) Toast.makeText(mContext, R.string.loadFailed, Toast.LENGTH_SHORT).show();
+        if (result == null || result.size() == 0) Toast.makeText(mContext, R.string.loadFailed, Toast.LENGTH_SHORT).show();
         this.listener.OnGetConversationsByIdCompleted(result);
         //Toast.makeText(mContext, "Ready", Toast.LENGTH_LONG).show();
     }

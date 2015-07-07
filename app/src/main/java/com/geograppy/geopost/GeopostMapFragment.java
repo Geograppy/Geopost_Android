@@ -385,6 +385,10 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
     }
 
     public void showNotificationList(){
+
+        if (currentGpsLatitude != 0 || currentGpsLongitude != 0){
+            notificationManager.start(new LatLng(currentGpsLatitude, currentGpsLongitude));
+        }
         notificationManager.showNotificationsList();
     }
 
@@ -432,7 +436,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         currentMapCenterLon = center.longitude;
         if (currentMapCenterLon != 0 || currentMapCenterLat != 0){
             showConversationsOnMap();
-            notificationManager.start(center);
+
         } else {zoomToFullExtent();}
     }
 }

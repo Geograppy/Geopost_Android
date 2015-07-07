@@ -35,8 +35,10 @@
     <string name="notification_conversations_found_text">Found new geoposts close to you!</string>
     <string name="notification_comment_found_text">There are comments to your geoposts!</string>
     <string name="notifications_comment_and_converations_found_text">Found geoposts close to you and there are comments to your geposts!</string>
-    <string name="notifications_list_conversation_found">Found a new geopost close to you with title: </string>
-    <string name="notifications_list_comment">Someone commented to your geopost conversation with title: </string>
+    <string name="notifications_list_conversation_found">This geopost was found close to you! </string>
+    <string name="notifications_list_comment">Someone commented to your geopost! </string>
+    <string name="show_notifications_title">Activity</string>
+    <string name="clear">clear</string>
     <string name="sharedPrefNotifiedConversationIds">NotifiedConversationIds</string>
     <string name="pick_account">Please pick a login account</string>
     <string name="UsernameExists">Username already exists!</string>

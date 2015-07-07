@@ -35,14 +35,16 @@ public class ShowNotificationListAdapter<G> extends ArrayAdapter<GeopostNotifica
             convertView = (View) inflater.inflate(
                     R.layout.show_notification_item, null);
         }
-
+        TextView title = (TextView)convertView.findViewById(R.id.show_notification_item_title);
         TextView text=(TextView)convertView.findViewById(R.id.show_notification_item_text);
 
+        title.setText(notifications.get(position).Title);
+
         if (notifications.get(position).NotificationType == 1){
-            text.setText(context.getString(R.string.notifications_list_conversation_found) + notifications.get(position).Title);
+            text.setText(context.getString(R.string.notifications_list_conversation_found));
         }
         else{
-            text.setText(context.getString(R.string.notifications_list_comment) + notifications.get(position).Title);
+            text.setText(context.getString(R.string.notifications_list_comment));
         }
         return convertView;
     }

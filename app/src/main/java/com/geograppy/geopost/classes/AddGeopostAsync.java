@@ -54,8 +54,8 @@ public class AddGeopostAsync extends AsyncTask<String, Integer, Boolean> {
             url = new URL(mContext.getString(R.string.wsUrl) + "/add/geopost");
 
             conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(3000);
+            conn.setConnectTimeout(5000);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoInput(true);

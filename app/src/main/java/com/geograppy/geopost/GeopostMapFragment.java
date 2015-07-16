@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.view.Gravity;
@@ -53,6 +54,9 @@ import org.json.JSONStringer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.OnMapLongClickListener, OnTaskCompleted, OnMapReadyCallback, ConnectionCallbacks, OnConnectionFailedListener, LocationListener, TouchableWrapper.UpdateMapAfterUserInterection {
@@ -78,6 +82,9 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
     public View mOriginalContentView;
     public TouchableWrapper mTouchView;
     public NotificationControl notificationManager;
+    private long notificationPollingInterval;
+    private static final ScheduledExecutorService worker =
+            Executors.newSingleThreadScheduledExecutor();
 
 
     @Override
@@ -90,6 +97,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
 
         notificationManager = new NotificationControl((MainActivity)super.getActivity());
         notificationManager.sendNotifications = false;
+        notificationPollingInterval = fragmentActivity.getResources().getInteger(R.integer.activePolling);
         setUpdateLocationRequest(R.integer.locationRequestInterval_active);
         //llLayout.findViewById(R.id.activity_frame);
         //LayoutInflater layoutInflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -112,6 +120,9 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
     public void onDestroyView(){
         super.onDestroyView();
         notificationManager.sendNotifications = false;
+        //worker.shutdown();
+        notificationPollingInterval = fragmentActivity.getResources().getInteger(R.integer.notActivePolling);
+        //getNotifications();
         setUpdateLocationRequest(R.integer.locationRequestInterval_inactive);
     }
 
@@ -247,7 +258,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         currentGpsLongitude = location.getLongitude();
 
         LatLng latLng = new LatLng(currentGpsLatitude, currentGpsLongitude);
-        notificationManager.start(latLng);
+        getNotifications();
 
         if (!initialLocationSet) {
             if (currentGpsLatitude != 0 && currentGpsLongitude !=0) {
@@ -259,6 +270,26 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
             //showConversationsOnMap();
             initialLocationSet = true;
         }
+    }
+
+    public double getCurrentGpsLatitude(){
+        return currentGpsLatitude;
+    }
+
+    public double getCurrentGpsLongitude(){
+        return currentGpsLongitude;
+    }
+
+    private void getNotifications(){
+        Runnable task = new Runnable() {
+            public void run() {
+                while(true){
+                    notificationManager.start();
+                    SystemClock.sleep(notificationPollingInterval);
+                }
+            }
+        };
+        worker.scheduleWithFixedDelay(task, 0, notificationPollingInterval, TimeUnit.MILLISECONDS);
     }
 
     public void zoomToFullExtent(){
@@ -379,6 +410,9 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         buildGoogleApiClient();
         if (mGoogleApiClient != null && !mGoogleApiClient.isConnected()) {mGoogleApiClient.connect();}
         notificationManager.sendNotifications = false;
+        //worker.shutdown();
+        notificationPollingInterval = fragmentActivity.getResources().getInteger(R.integer.activePolling);
+        //getNotifications();
         notificationManager.removeAll();
         setUpdateLocationRequest(R.integer.locationRequestInterval_active);
         //showConversationsOnMap();
@@ -397,6 +431,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         super.onPause();
         if (mGoogleApiClient.isConnected()) {
             notificationManager.sendNotifications = true;
+            notificationPollingInterval = fragmentActivity.getResources().getInteger(R.integer.notActivePolling);
             setUpdateLocationRequest(R.integer.locationRequestInterval_inactive);
             //LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
             //mGoogleApiClient.disconnect();

@@ -23,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONStringer;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.UUID;
 
 /**
@@ -167,6 +169,7 @@ public class ShowGeopostFromMarker extends Dialog implements OnAnswerGeopostComp
             this.dismiss();
             return;
         }
+        Collections.sort(geopost, new customComparator());
         ListView listView = (ListView) findViewById(R.id.show_geopost_list);
 
         adapter = new ShowGeopostListAdapter<>(c, R.layout.show_geopost_item, geopost);
@@ -202,5 +205,12 @@ public class ShowGeopostFromMarker extends Dialog implements OnAnswerGeopostComp
                 listView.setSelection(adapter.getCount() - 1);
             }
         });
+    }
+
+    class customComparator implements Comparator<Geopost> {
+        @Override
+        public int compare(Geopost lhs, Geopost rhs) {
+            return rhs.Sorter.compareTo(lhs.Sorter);
+        }
     }
 }

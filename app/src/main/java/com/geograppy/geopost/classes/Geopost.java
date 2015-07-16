@@ -1,6 +1,10 @@
 package com.geograppy.geopost.classes;
 
+import com.google.android.gms.games.internal.constants.TimeSpan;
+
 import java.util.UUID;
+
+import javax.xml.datatype.Duration;
 
 public class Geopost {
 
@@ -17,8 +21,10 @@ public class Geopost {
     public UUID ConversationId;
 
     public String TimeAgo;
+    public Long Sorter;
 
     public void setTimeAgo(String value){
+        setSorter(value);
         if (value.contains(".") && (value.indexOf(".") < value.indexOf(":"))){
             int index = value.indexOf(".");
             int endIndex = index--;
@@ -69,5 +75,11 @@ public class Geopost {
         int minutes = Integer.parseInt(value);
         if (minutes > 1) TimeAgo = Integer.toString(minutes) + " minutes ago";
         else TimeAgo = "1 minute ago";
+    }
+
+    private void setSorter(String value){
+        if (value.contains(".")) value = value.replace(".", "");
+        if (value.contains(":")) value = value.replace(":", "");
+        Sorter = Long.parseLong(value);
     }
 }

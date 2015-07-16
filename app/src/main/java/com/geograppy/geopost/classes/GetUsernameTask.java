@@ -60,7 +60,7 @@ public class GetUsernameTask extends AsyncTask<String, Integer, Integer> {
 
     @Override
     protected void onPostExecute(Integer result){
-
+        if (result == -1) return;
         Helpers.setUseridInPreferences(result, mActivity);
         mUserIdListner.onUserIdFetched(result);
     }
@@ -96,8 +96,8 @@ public class GetUsernameTask extends AsyncTask<String, Integer, Integer> {
             url = new URL(urlString);
 
             conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(30000);
-            conn.setConnectTimeout(40000);
+            conn.setReadTimeout(3000);
+            conn.setConnectTimeout(4000);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoInput(true);

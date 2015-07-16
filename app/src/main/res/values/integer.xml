@@ -3,4 +3,6 @@
     <integer name="buffer_for_conversations">500</integer>
     <integer name="locationRequestInterval_active">10</integer>
     <integer name="locationRequestInterval_inactive">600</integer>
+    <integer name="activePolling">60000</integer>
+    <integer name="notActivePolling">600000</integer>
 </resources>

@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.view.Gravity;
 
+import com.geograppy.geopost.GeopostMapFragment;
 import com.geograppy.geopost.MainActivity;
 import com.geograppy.geopost.R;
 import com.google.android.gms.maps.model.LatLng;
@@ -49,6 +50,15 @@ public class NotificationControl implements OnNotifcationsReceived, OnNotificati
         if (latLng.latitude != 0 || latLng.longitude != 0){
             lon = latLng.longitude;
             lat = latLng.latitude;
+            getNotifications();
+        }
+    }
+
+    public void start(){
+        GeopostMapFragment f = (GeopostMapFragment) a.getSupportFragmentManager().findFragmentById(R.id.map);
+        if (f.getCurrentGpsLatitude() != 0 || f.getCurrentGpsLongitude() != 0){
+            lon = f.getCurrentGpsLatitude();
+            lat = f.getCurrentGpsLongitude();
             getNotifications();
         }
     }

@@ -58,8 +58,8 @@ public class SetUsernameInDbAsync extends AsyncTask<String, Integer, String> {
             url = new URL(urlString);
 
             conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(100000);
-            conn.setConnectTimeout(150000);
+            conn.setReadTimeout(5000);
+            conn.setConnectTimeout(10000);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoInput(true);

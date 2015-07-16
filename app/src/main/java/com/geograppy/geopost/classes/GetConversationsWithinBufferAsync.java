@@ -85,8 +85,8 @@ public class GetConversationsWithinBufferAsync extends AsyncTask<String, Integer
         try {
             url = new URL(mContext.getString(R.string.wsUrl) + "/get/conversations");
             conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(5000);
+            conn.setConnectTimeout(10000);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoInput(true);

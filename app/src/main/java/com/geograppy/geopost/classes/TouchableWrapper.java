@@ -12,7 +12,9 @@ import com.geograppy.geopost.MainActivity;
 public  class TouchableWrapper extends FrameLayout {
 
     private long lastTouched = 0;
-    private static final long SCROLL_TIME = 200L; // 200 Milliseconds, but you can adjust that to your liking
+    private static final long SCROLL_TIME = 1000L; // 200 Milliseconds, but you can adjust that to your liking
+    private long lastUpdated = 0;
+    private static final long UPDATE_INTERVAL = 30000;
     private UpdateMapAfterUserInterection updateMapAfterUserInterection;
 
     public TouchableWrapper(Context context, UpdateMapAfterUserInterection listener) {
@@ -33,8 +35,9 @@ public  class TouchableWrapper extends FrameLayout {
                 break;
             case MotionEvent.ACTION_UP:
                 final long now = SystemClock.uptimeMillis();
-                if (now - lastTouched > SCROLL_TIME) {
+                if (now - lastTouched > SCROLL_TIME && now - lastUpdated > UPDATE_INTERVAL) {
                     // Update the map
+                    lastUpdated = SystemClock.uptimeMillis();
                     updateMapAfterUserInterection.onUpdateMapAfterUserInterection();
                 }
                 break;

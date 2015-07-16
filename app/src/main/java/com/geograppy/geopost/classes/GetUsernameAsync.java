@@ -36,6 +36,7 @@ public class GetUsernameAsync extends AsyncTask<String, Integer, String> {
     protected void onPostExecute(String result){
         //pb.setVisibility(View.GONE);
         //double showRestult = result;
+        if (result.isEmpty() || result == null) result = "-1";
         listener.onUserNameFetched(result);
         //Toast.makeText(mContext, "Geoposted", Toast.LENGTH_LONG).show();
     }
@@ -58,8 +59,8 @@ public class GetUsernameAsync extends AsyncTask<String, Integer, String> {
             url = new URL(urlString);
 
             conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(100000);
-            conn.setConnectTimeout(150000);
+            conn.setReadTimeout(3000);
+            conn.setConnectTimeout(6000);
             conn.setRequestMethod("GET");
 
             // get response

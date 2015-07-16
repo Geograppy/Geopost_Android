@@ -84,8 +84,8 @@ public class GetConversationsByIdAsync extends AsyncTask<String, Integer, ArrayL
         try {
             url = new URL(mContext.getString(R.string.wsUrl) + "/get/conversation");
             conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(5000);
+            conn.setConnectTimeout(10000);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoInput(true);

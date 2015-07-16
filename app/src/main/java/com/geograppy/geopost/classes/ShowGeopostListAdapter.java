@@ -9,11 +9,17 @@ import android.widget.TextView;
 
 import com.geograppy.geopost.R;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * Created by benito on 04/05/15.
  */
+
+
+
+
 
 public class ShowGeopostListAdapter<G> extends ArrayAdapter<Geopost> {
     private Context context;

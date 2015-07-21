@@ -12,10 +12,22 @@ android {
         versionName "1.0"
         multiDexEnabled true
     }
+    signingConfigs {
+        release {
+            storeFile file('/home/benito/Dropbox/Android/KeyStore/geopost.jks')
+            storePassword '2Gitaren'
+            keyAlias 'geopost'
+            keyPassword '2Gitaren'
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        r {
+            signingConfig signingConfigs.release
         }
     }
 }

@@ -85,6 +85,9 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
     private long notificationPollingInterval;
     private static final ScheduledExecutorService worker =
             Executors.newSingleThreadScheduledExecutor();
+    private double lastUpdateConversationsLat;
+    private double lastUpdateConversationsLon;
+
 
 
     @Override
@@ -281,6 +284,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
     }
 
     private void getNotifications(){
+        notificationManager.start();
         Runnable task = new Runnable() {
             public void run() {
                 while(true){
@@ -460,19 +464,45 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
 
     @Override
     public void onTaskCompleted(ArrayList<ConversationGeom>conversations) {
+        if (conversations == null || conversations.size() ==0){
+            lastUpdateConversationsLat = 0;
+            lastUpdateConversationsLon = 0;
+        }
         controlMarker(conversations);
     }
 
     @Override
     public void onUpdateMapAfterUserInterection() {
-
+        if (!initialLocationSet) initialLocationSet = true;
         LatLng center = mMap.getCameraPosition().target;
         currentMapCenterLat = center.latitude;
         currentMapCenterLon = center.longitude;
-        if (currentMapCenterLon != 0 || currentMapCenterLat != 0){
+        if (currentMapCenterLat != 0 || currentMapCenterLon != 0){
+            lastUpdateConversationsLat = currentMapCenterLat;
+            lastUpdateConversationsLat = currentMapCenterLat;
             showConversationsOnMap();
 
-        } else {zoomToFullExtent();}
+        } else if (currentMapCenterLon == 0 && currentMapCenterLat == 0){
+            zoomToFullExtent();
+        }
+
+    }
+
+    private boolean newMapLocationOutsideBuffer(){
+        if (lastUpdateConversationsLat == 0 && lastUpdateConversationsLon == 0) return true;
+
+
+        final int radius = 6371; // Radius of the earth
+
+        Double latDistance = Math.toRadians(currentMapCenterLat - lastUpdateConversationsLat);
+        Double lonDistance = Math.toRadians(currentMapCenterLon - lastUpdateConversationsLon);
+        Double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lastUpdateConversationsLat)) * Math.cos(Math.toRadians(currentMapCenterLat))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double distance = radius * c * 1000; // convert to meters
+        int buffer = super.getResources().getInteger(R.integer.buffer_for_conversations);
+        return distance > buffer;
     }
 }
 

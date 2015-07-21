@@ -54,8 +54,8 @@ public class AddGeopostAsync extends AsyncTask<String, Integer, Boolean> {
             url = new URL(mContext.getString(R.string.wsUrl) + "/add/geopost");
 
             conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(3000);
-            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(6000);
+            conn.setConnectTimeout(10000);
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoInput(true);
@@ -85,16 +85,6 @@ public class AddGeopostAsync extends AsyncTask<String, Integer, Boolean> {
                 //String result = getStringFromInputStream(_is);
                 //Log.i("Error != 2xx", result);
             }
-            /*//= new BufferedInputStream(conn.getInputStream());
-            BufferedReader responseStreamReader = new BufferedReader(new InputStreamReader(_is));
-            String line = "";
-            StringBuilder stringBuilder = new StringBuilder();
-            while ((line = responseStreamReader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-            responseStreamReader.close();
-
-            String response = stringBuilder.toString();*/
 
             conn.disconnect();
             return result;

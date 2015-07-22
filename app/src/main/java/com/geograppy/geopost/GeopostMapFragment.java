@@ -98,7 +98,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         llLayout    = (FrameLayout)    inflater.inflate(R.layout.fragment_geopost_map, container, false);
         initialLocationSet = false;
 
-        notificationManager = new NotificationControl((MainActivity)super.getActivity());
+        notificationManager = NotificationControl.getInstance((MainActivity) super.getActivity());
         notificationManager.sendNotifications = false;
         notificationPollingInterval = fragmentActivity.getResources().getInteger(R.integer.activePolling);
         setUpdateLocationRequest(R.integer.locationRequestInterval_active);
@@ -284,6 +284,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
     }
 
     private void getNotifications(){
+        if (notificationManager == null) notificationManager = NotificationControl.getInstance((MainActivity) super.getActivity());
         notificationManager.start();
         Runnable task = new Runnable() {
             public void run() {
@@ -363,6 +364,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
             @Override
             public boolean onMarkerClick(Marker arg0) {
                 ConversationGeom conversation = markersData.get(arg0);
+                zoomToLatLng(new LatLng(conversation.Lat, conversation.Lon));
                 final Dialog dialog = new ShowGeopostFromMarker(fragmentActivity, conversation);
 
                 dialog.getWindow().setGravity(Gravity.BOTTOM);

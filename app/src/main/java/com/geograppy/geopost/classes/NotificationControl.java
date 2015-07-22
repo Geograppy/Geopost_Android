@@ -40,10 +40,16 @@ public class NotificationControl implements OnNotifcationsReceived, OnNotificati
     private NotificationManager mNotifyMgr;
     public boolean sendNotifications = false;
     private ArrayList<GeopostNotification> notifications;
+    private static volatile NotificationControl instance;
 
-    public NotificationControl(MainActivity a){
+    private NotificationControl(MainActivity a){
         this.a = a;
         this.mNotifyMgr = (NotificationManager) a.getSystemService(a.NOTIFICATION_SERVICE);
+    }
+
+    public static synchronized NotificationControl getInstance(MainActivity a){
+        if (instance == null) instance = new NotificationControl(a);
+        return instance;
     }
 
     public void start(LatLng latLng){

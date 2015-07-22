@@ -39,6 +39,7 @@ import com.geograppy.geopost.R;
 import com.geograppy.geopost.classes.GetConversationsWithinBufferAsync;
 import com.geograppy.geopost.classes.GetUsernameAsync;
 import com.geograppy.geopost.classes.GetUsernameTask;
+import com.geograppy.geopost.classes.HelpDialog;
 import com.geograppy.geopost.classes.Helpers;
 import com.geograppy.geopost.classes.OnExceptionThrown;
 import com.geograppy.geopost.classes.OnUserIdFetched;
@@ -344,6 +345,14 @@ public class MainActivity extends ActionBarActivity implements OnUserNameFetched
                     break;
                 }
                 case 3: {
+                    final Dialog dialog = new HelpDialog(this.a);
+                    dialog.getWindow().setGravity(Gravity.BOTTOM);
+                    dialog.getWindow().getAttributes().windowAnimations = R.style.add_geopost_dialog_animation;
+
+                    dialog.show();
+                    break;
+                }
+                case 4: {
                     Helpers.setUsernameInPreferences("", this.a);
                     Helpers.setUseridInPreferences(-1, this.a);
                     finish();

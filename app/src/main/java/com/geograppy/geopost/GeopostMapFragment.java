@@ -261,6 +261,9 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         currentGpsLongitude = location.getLongitude();
 
         LatLng latLng = new LatLng(currentGpsLatitude, currentGpsLongitude);
+        if (notificationManager == null) notificationManager = NotificationControl.getInstance((MainActivity) super.getActivity());
+        notificationManager.setLat(currentGpsLatitude);
+        notificationManager.setLon(currentGpsLongitude);
         getNotifications();
 
         if (!initialLocationSet) {
@@ -268,6 +271,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17));
                 currentMapCenterLat = currentGpsLatitude;
                 currentMapCenterLon = currentGpsLongitude;
+
             }
             else {mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 3));}
             //showConversationsOnMap();
@@ -289,6 +293,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         Runnable task = new Runnable() {
             public void run() {
                 while(true){
+                    notificationManager = NotificationControl.getInstance((MainActivity) mMapFragment.getActivity());
                     notificationManager.start();
                     SystemClock.sleep(notificationPollingInterval);
                 }

@@ -42,6 +42,7 @@ public class NotificationControl implements OnNotifcationsReceived, OnNotificati
     private ArrayList<GeopostNotification> notifications;
     private static volatile NotificationControl instance;
 
+
     private NotificationControl(MainActivity a){
         this.a = a;
         this.mNotifyMgr = (NotificationManager) a.getSystemService(a.NOTIFICATION_SERVICE);
@@ -59,14 +60,16 @@ public class NotificationControl implements OnNotifcationsReceived, OnNotificati
             getNotifications();
         }
     }
+    public void setLat(double latitude){
+        lat = latitude;
+    }
+
+    public void setLon(double longitude){
+        lon = longitude;
+    }
 
     public void start(){
-        GeopostMapFragment f = (GeopostMapFragment) a.getSupportFragmentManager().findFragmentById(R.id.map);
-        if (f.getCurrentGpsLatitude() != 0 || f.getCurrentGpsLongitude() != 0){
-            lon = f.getCurrentGpsLatitude();
-            lat = f.getCurrentGpsLongitude();
-            getNotifications();
-        }
+        getNotifications();
     }
 
     private void getNotifications(){

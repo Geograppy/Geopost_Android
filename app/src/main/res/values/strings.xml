@@ -46,15 +46,23 @@
     <string name="loadFailed">Failed to load. Check internet connection</string>
     <string name="getUsernameFailed">Failed to get username. Check internet connection</string>
     <string name="saved">Saved</string>
-    <string name="banner_ad_unit_id">ca-app-pub-4905755038708706/1788352674</string>
+    <string name="banner_ad_unit_id">ca-app-pub-4905755038708706/1788352674</string><!--prod-->
+    <!--<string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>--><!--test-->
     <string name="notifications">Notifications</string>
+    <string name="thanks">Thanks!</string>
 
     <string-array name="nav_drawer_items">
         <item >Change username: </item>
         <item >Go to my location</item>
         <item >Post to my location</item>
+        <item>Help me!</item>
         <item >Log out</item>
     </string-array>
 
     <string name="said">said</string>
+    <string name="help_text"><![CDATA[ <b>How to:</b><br/><br/>
+&#8226; <b>Add a post to the map:</b> Hold your finger (long tap) on the map where you want to post a message. A box will appear where you can type your message.<br/><br/>
+&#8226; <b>See the content of a message:</b> When you see a message on the map, tap on it. The message text will show.<br/><br/>
+&#8226; <b>Answer to a message:</b> when you see a massage on the map, tap on it. The content will be shown and there you can tap <i>Comment</i> to post an answer.<br/><br/>
+&#8226; <b>Load more messages:</b> The app reacts to your actions on the map. When you zoom in, or when you move to another location on the map, all messages within 500m from the new middle point of the map are loaded.<br/><br/>]]></string>
 </resources>

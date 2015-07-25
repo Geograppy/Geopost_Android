@@ -100,7 +100,7 @@ public class MainActivity extends ActionBarActivity implements OnUserNameFetched
         putUsernameInDrawer();
         setStatusBarColor(getResources().getColor(R.color.actionbar));
         //mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-
+        //test
         mDrawerList.setAdapter(new ArrayAdapter<String>(
                 this, R.layout.drawer_list_item, mDrawerItems));
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener(this));

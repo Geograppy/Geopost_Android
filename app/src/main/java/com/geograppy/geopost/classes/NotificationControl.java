@@ -54,7 +54,7 @@ public class NotificationControl implements OnNotifcationsReceived, OnNotificati
     }
 
     public void start(LatLng latLng){
-        if (latLng.latitude != 0 || latLng.longitude != 0){
+        if (a != null && (latLng.latitude != 0 || latLng.longitude != 0)){
             lon = latLng.longitude;
             lat = latLng.latitude;
             getNotifications();
@@ -69,6 +69,7 @@ public class NotificationControl implements OnNotifcationsReceived, OnNotificati
     }
 
     public void start(){
+        if (a == null)return;
         getNotifications();
     }
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">GeoPost</string>
+    <string name="app_name">Geopost</string>
     <string name="title_activity_main">Geopost</string>
     <string name="title_activity_navigation_drawer">NavigationDrawerActivity</string>
 

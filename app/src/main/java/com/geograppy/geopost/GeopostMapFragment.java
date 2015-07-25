@@ -289,12 +289,12 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
 
     private void getNotifications(){
         if (notificationManager == null) notificationManager = NotificationControl.getInstance((MainActivity) super.getActivity());
-        notificationManager.start();
+        if (notificationManager != null) notificationManager.start();
         Runnable task = new Runnable() {
             public void run() {
                 while(true){
-                    notificationManager = NotificationControl.getInstance((MainActivity) mMapFragment.getActivity());
-                    notificationManager.start();
+                    if (notificationManager== null) notificationManager = NotificationControl.getInstance((MainActivity) mMapFragment.getActivity());
+                    if (notificationManager != null) notificationManager.start();
                     SystemClock.sleep(notificationPollingInterval);
                 }
             }

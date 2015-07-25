@@ -88,7 +88,7 @@ public class MainActivity extends ActionBarActivity implements OnUserNameFetched
     private int mNotificationsCount;
 
 
-
+//this is a test for the new branch
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

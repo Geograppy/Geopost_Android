@@ -274,7 +274,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
 
             }
             else {mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 3));}
-            //showConversationsOnMap();
+            showConversationsOnMap();
             initialLocationSet = true;
         }
     }

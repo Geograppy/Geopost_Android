@@ -87,6 +87,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
             Executors.newSingleThreadScheduledExecutor();
     private double lastUpdateConversationsLat;
     private double lastUpdateConversationsLon;
+    private static boolean showInstructionMarker = true;
 
 
 
@@ -474,6 +475,14 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         if (conversations == null || conversations.size() ==0){
             lastUpdateConversationsLat = 0;
             lastUpdateConversationsLon = 0;
+            if (showInstructionMarker){
+                showInstructionMarker = false;
+                ConversationGeom conversation = new ConversationGeom();
+                conversation.Lat = currentMapCenterLat;
+                conversation.Lon = currentMapCenterLon;
+                conversation.Title = this.getResources().getString(R.string.instruction_marker_title);
+                conversations.add(conversation);
+            }
         }
         controlMarker(conversations);
     }
@@ -487,6 +496,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         if (currentMapCenterLat != 0 || currentMapCenterLon != 0){
             lastUpdateConversationsLat = currentMapCenterLat;
             lastUpdateConversationsLat = currentMapCenterLat;
+            if (!showInstructionMarker && mMap != null) mMap.clear();
             showConversationsOnMap();
 
         } else if (currentMapCenterLon == 0 && currentMapCenterLat == 0){

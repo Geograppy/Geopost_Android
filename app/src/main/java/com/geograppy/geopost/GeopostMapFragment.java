@@ -54,6 +54,8 @@ import org.json.JSONStringer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -77,7 +79,8 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
     private double currentMapCenterLat;
     private double currentMapCenterLon;
     private Boolean initialLocationSet;
-    private Map<Marker, ConversationGeom> markersData = new HashMap<Marker, ConversationGeom>();
+    private Map<UUID, Marker> markersData = new HashMap<UUID, Marker>();
+    private Map<Marker, ConversationGeom> conversationsData = new HashMap<Marker, ConversationGeom>();
     private SupportMapFragment mMapFragment;
     public View mOriginalContentView;
     public TouchableWrapper mTouchView;
@@ -88,6 +91,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
     private double lastUpdateConversationsLat;
     private double lastUpdateConversationsLon;
     private static boolean showInstructionMarker = true;
+    private UUID instructionMarkerUUID;
 
 
 
@@ -327,7 +331,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         if (conversations != null) {
             for (int i = 0; i < conversations.size(); i++) {
 
-                if (markersData.containsValue(conversations.get(i))) continue;
+                if (markersData.containsKey(conversations.get(i).ConvGuid)) continue;
                 int iconPosition = 40;
                 IconGenerator tc = new IconGenerator(super.getActivity());
                 tc.setColor(getResources().getColor(R.color.actionbar));
@@ -357,8 +361,8 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
                         position(latlng);
 
                 Marker marker = mMap.addMarker(markerOptions);
-                markersData.put(marker, conversations.get(i));
-
+                markersData.put(conversations.get(i).ConvGuid, marker);
+                conversationsData.put(marker, conversations.get(i));
             }
         }
 
@@ -369,7 +373,11 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
 
             @Override
             public boolean onMarkerClick(Marker arg0) {
-                ConversationGeom conversation = markersData.get(arg0);
+                ConversationGeom conversation = conversationsData.get(arg0);
+                if (conversation.ConvGuid == instructionMarkerUUID) {
+                    removeInstructionMarker();
+                    return true;
+                }
                 zoomToLatLng(new LatLng(conversation.Lat, conversation.Lon));
                 final Dialog dialog = new ShowGeopostFromMarker(fragmentActivity, conversation);
 
@@ -383,6 +391,7 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
 
         });
     }
+
 
     private void setupMap(){
         //if (mMapFragment == null) mMapFragment = (SupportMapFragment)fragmentActivity.getSupportFragmentManager()
@@ -481,6 +490,8 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
                 conversation.Lat = currentMapCenterLat;
                 conversation.Lon = currentMapCenterLon;
                 conversation.Title = this.getResources().getString(R.string.instruction_marker_title);
+                conversation.ConvGuid = UUID.randomUUID();
+                instructionMarkerUUID = conversation.ConvGuid;
                 conversations.add(conversation);
             }
         }
@@ -496,13 +507,18 @@ public class GeopostMapFragment extends SupportMapFragment implements GoogleMap.
         if (currentMapCenterLat != 0 || currentMapCenterLon != 0){
             lastUpdateConversationsLat = currentMapCenterLat;
             lastUpdateConversationsLat = currentMapCenterLat;
-            if (!showInstructionMarker && mMap != null) mMap.clear();
+            if (!showInstructionMarker) removeInstructionMarker();
             showConversationsOnMap();
 
         } else if (currentMapCenterLon == 0 && currentMapCenterLat == 0){
             zoomToFullExtent();
         }
 
+    }
+
+    private void removeInstructionMarker(){
+        Marker marker = markersData.get(instructionMarkerUUID);
+        marker.remove();
     }
 
     private boolean newMapLocationOutsideBuffer(){

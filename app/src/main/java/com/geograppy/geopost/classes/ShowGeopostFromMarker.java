@@ -45,7 +45,7 @@ public class ShowGeopostFromMarker extends Dialog implements OnAnswerGeopostComp
         super(a);
         // TODO Auto-generated constructor stub
         this.c = a;
-        this.latLng = new LatLng(conversation.Lat, conversation.Lon);
+        //this.latLng = new LatLng(conversation.Lat, conversation.Lon);
         this.geopostId = conversation.ConvGuid;
         this.title = conversation.Title;
 

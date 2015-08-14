@@ -49,6 +49,7 @@
     <!--<string name="banner_ad_unit_id">ca-app-pub-4905755038708706/1788352674</string>--><!--prod-->
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string><!--test-->
     <string name="notifications">Notifications</string>
+    <string name="instruction_marker_title">Long press the map to post a message!</string>
     <string name="thanks">Thanks!</string>
 
     <string-array name="nav_drawer_items">

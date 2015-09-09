@@ -70,6 +70,7 @@ public class NotificationControl implements OnNotifcationsReceived, OnNotificati
 
     public void start(){
         if (a == null)return;
+        if (!Helpers.hasKnownUsername(a)) return;
         getNotifications();
     }
 
